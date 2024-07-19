@@ -5,6 +5,7 @@ import {
   setNotification,
   clearNotification,
 } from "../reducers/notificationReducer";
+import anecdoteService from "../services/anecdotes";
 
 const Anecdote = ({anecdote, vote}) => {
   return (
@@ -24,13 +25,14 @@ const AnectodeList = () => {
   const anecdotes = useSelector(({anecdotes, filter}) =>
     anecdotes
       .filter(anecdote =>
-        anecdote.content.toLowerCase().includes(filter.toLowerCase())
+        (anecdote.content || "").toLowerCase().includes(filter.toLowerCase())
       )
       .sort((a, b) => b.votes - a.votes)
   );
 
-  const vote = anecdote => {
-    dispatch(voteAnecdote(anecdote.id));
+  const vote = async anecdote => {
+    const changedAnecdote = await anecdoteService.update(anecdote.id);
+    dispatch(voteAnecdote(changedAnecdote));
     dispatch(setNotification(`you voted ${anecdote.content}`));
     setTimeout(() => dispatch(clearNotification()), 3000);
   };
