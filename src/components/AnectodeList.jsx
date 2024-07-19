@@ -1,18 +1,19 @@
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {updateAnecdote} from "../reducers/anecdoteReducer";
+import {updateAnecdote, deleteOne} from "../reducers/anecdoteReducer";
 import {
   setNotification,
   clearNotification,
 } from "../reducers/notificationReducer";
 
-const Anecdote = ({anecdote, vote}) => {
+const Anecdote = ({anecdote, vote, deleteHandler}) => {
   return (
     <div>
       <div>{anecdote.content}</div>
       <div>
         has {anecdote.votes}
         <button onClick={() => vote(anecdote)}>vote</button>
+        <button onClick={() => deleteHandler(anecdote)}>delete</button>
       </div>
     </div>
   );
@@ -35,10 +36,21 @@ const AnectodeList = () => {
     setTimeout(() => dispatch(clearNotification()), 3000);
   };
 
+  const deleteHandler = async anecdote => {
+    dispatch(deleteOne(anecdote));
+    dispatch(setNotification(`you deleted ${anecdote.content}`));
+    setTimeout(() => dispatch(clearNotification()), 3000);
+  };
+
   return (
     <div>
       {anecdotes.map(anecdote => (
-        <Anecdote key={anecdote.id} anecdote={anecdote} vote={vote} />
+        <Anecdote
+          key={anecdote.id}
+          anecdote={anecdote}
+          vote={vote}
+          deleteHandler={deleteHandler}
+        />
       ))}
     </div>
   );
